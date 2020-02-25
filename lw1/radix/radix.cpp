@@ -3,8 +3,6 @@
 #include <cstdlib> 
 #include <vector>
 #include <algorithm>
-#include <exception>
-#include <optional>
 
 struct ErrorCodes
 {
@@ -37,8 +35,13 @@ public:
         {
             return "";
         }
+        std::string result = IntToString(decNumber, to, wasError);
 
-        return IntToString(decNumber, to, wasError);
+        if (wasError)
+        {
+            return "";
+        }
+        return result;
     }
 
     void PrintError()
