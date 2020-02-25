@@ -9,6 +9,7 @@ struct ErrorCodes
     static const int WRONG_SYMBOLS_ERR = 1;
     static const int NO_NUMBER_ERR = 2;
     static const int CONVERT_ERROR = 3;
+    static const int SYMBOL_OUT_OF_RADIX_RANGE_ERR = 4;
 };
 
 class CConvertor
@@ -25,7 +26,6 @@ public:
         toUpperCase(number);
         if (!IsValidNumber(number, from))
         {
-            errorCode = ErrorCodes::WRONG_SYMBOLS_ERR;
             wasError = true;
             return "";
         }
@@ -50,13 +50,16 @@ public:
         switch (errorCode)
         {
             case ErrorCodes::WRONG_SYMBOLS_ERR:
-                std::cout << "Number Contains wrong symbols or symbols out of radix range\n";
+                std::cout << "Number contains wrong symbols\n";
                 break;
             case ErrorCodes::NO_NUMBER_ERR:
                 std::cout << "Emptmy number\n";
                 break;
             case ErrorCodes::CONVERT_ERROR:
                 std::cout << "An error occurred while converting\n";
+                break;
+            case ErrorCodes::SYMBOL_OUT_OF_RADIX_RANGE_ERR:
+                std::cout << "Number contains out of radix range symbols";
                 break;
         }
     }
@@ -161,11 +164,13 @@ private:
             it = std::find(numbers.begin(), numbers.end(), ch);
             if (it == numbers.end())
             {
+                errorCode = ErrorCodes::WRONG_SYMBOLS_ERR;
                 return false;
             }
             position = std::distance(numbers.begin(), it);
             if (position >= radix)
             {
+                errorCode = ErrorCodes::SYMBOL_OUT_OF_RADIX_RANGE_ERR;
                 return false;
             }
         }
