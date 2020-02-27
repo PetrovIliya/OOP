@@ -3,70 +3,49 @@
 #include <cstdlib> 
 #include <vector>
 #include <algorithm>
+#include <exception>
 
-struct ErrorCodes
-{
-    static const int WRONG_SYMBOLS_ERR = 1;
-    static const int NO_NUMBER_ERR = 2;
-    static const int CONVERT_ERROR = 3;
-    static const int SYMBOL_OUT_OF_RADIX_RANGE_ERR = 4;
-};
-
-class CConvertor
+class CNumberSystemConvertor
 {
 public:
 
-    CConvertor()
+    CNumberSystemConvertor()
     {
         InitNumbers();
     }
 
-    std::string convert(int from, int to, std::string number, bool &wasError)
+    std::string convert(int from, int to, std::string number)
     {
         toUpperCase(number);
-        if (!IsValidNumber(number, from))
-        {
-            wasError = true;
-            return "";
-        }
-        int decNumber = StringToInt(number, from, wasError);
+        CheckNumberSystem(from, to);
+        CheckInput(number, from);
+        DeleteFirstSymbolIfNegative(number);
+        std::cout << number << std::endl;
+        int decNumber = StringToInt(number, from);
+        std::string result = IntToString(decNumber, to);
 
-        if (wasError)
-        {
-            return "";
-        }
-        std::string result = IntToString(decNumber, to, wasError);
-
-        if (wasError)
-        {
-            return "";
-        }
         return result;
-    }
-
-    void PrintError()
-    {
-        std::cout << "test";
-        switch (errorCode)
-        {
-            case ErrorCodes::WRONG_SYMBOLS_ERR:
-                std::cout << "Number contains wrong symbols\n";
-                break;
-            case ErrorCodes::NO_NUMBER_ERR:
-                std::cout << "Emptmy number\n";
-                break;
-            case ErrorCodes::CONVERT_ERROR:
-                std::cout << "An error occurred while converting\n";
-                break;
-            case ErrorCodes::SYMBOL_OUT_OF_RADIX_RANGE_ERR:
-                std::cout << "Number contains out of radix range symbols";
-                break;
-        }
     }
 
 private:
     std::vector<char> numbers;
-    int errorCode = 0;
+    bool isNegative = false;
+
+    void DeleteFirstSymbolIfNegative(std::string &str)
+    {
+        if (isNegative)
+        {
+            str.erase(0, 1);
+        }
+    }
+
+    void CheckNumberSystem(int from, int to)
+    {
+        if (from < 2 || to < 2)
+        {
+            throw std::exception("Wrong number system \n");
+        }
+    }
 
     void InitNumbers()
     {
@@ -85,14 +64,12 @@ private:
         std::transform(string.begin(), string.end(), string.begin(), ::toupper);
     }
 
-    int StringToInt(const std::string& str, int radix, bool& wasError)
+    int StringToInt(const std::string& str, int radix)
     {
         int stringLength = str.size();
         if (stringLength == 0)
         {
-            wasError = true;
-            errorCode = ErrorCodes::NO_NUMBER_ERR;
-            return -1;
+            throw std::exception("Emptmy number\n");
         }
         if (radix == 10)
         {
@@ -138,44 +115,43 @@ private:
         return intNumbers;
     }
 
-    std::string IntToString(int n, int radix, bool& wasError)
+    std::string IntToString(int n, int radix)
     {
-        char str[30];
+        char str[30] = "\0";
         int errCode;
 
         errCode = _itoa_s(n, str, radix);
         
         if (errCode != 0)
         {
-            wasError = true;
-            errorCode = ErrorCodes::CONVERT_ERROR;
-            return "";
+            throw std::exception("An error occurred while converting\n");
         }
 
         return str;
     }
 
-    bool IsValidNumber(const std::string& str, int radix)
+    void CheckInput(const std::string& str, int radix)
     {
         std::vector<char>::iterator it;
         int position;
+        char firstSymbol = str[0];
+        if (firstSymbol == '-')
+        {
+            isNegative = true;
+        }
         for (char ch : str)
         {
             it = std::find(numbers.begin(), numbers.end(), ch);
-            if (it == numbers.end())
+            if (it == numbers.end() && !isNegative)
             {
-                errorCode = ErrorCodes::WRONG_SYMBOLS_ERR;
-                return false;
+                throw std::exception("Number contains wrong symbols\n");
             }
             position = std::distance(numbers.begin(), it);
-            if (position >= radix)
+            if (position >= radix && !isNegative)
             {
-                errorCode = ErrorCodes::SYMBOL_OUT_OF_RADIX_RANGE_ERR;
-                return false;
+                throw std::exception("Number contains out of radix range symbols\n");
             }
         }
-
-        return true;
     }
 };
 
@@ -197,16 +173,19 @@ int main(int argc, char* argv[])
     args.numberSystemFrom = atoi(argv[1]);
     args.numberSystemTo = atoi(argv[2]);
     args.number = argv[3];
-    bool wasError = false;
-    CConvertor convertor;
-    std::string result = convertor.convert(args.numberSystemFrom, args.numberSystemTo, args.number, wasError);
-    if (wasError)
-    {
-        convertor.PrintError();
-        return 1;
-    }
+    CNumberSystemConvertor convertor;
 
-    std::cout << result << std::endl;
+    try
+    {
+        std::string result = convertor.convert(args.numberSystemFrom, args.numberSystemTo, args.number);
+        std::cout << result << std::endl;
+    }
+    catch(const std::exception & e)
+    {
+        std::cout << e.what() << '\n';
+        return 1;
+    };
+
 
     return 0;
 }
