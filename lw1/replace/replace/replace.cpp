@@ -1,12 +1,18 @@
 ﻿#include <iostream>
 #include <fstream>
 #include <string>
+#include <exception>
 
 std::string ReplaceString(const std::string& subject,
 	const std::string& searchString, const std::string& replacementString)
 {
 	size_t pos = 0;
 	std::string result;
+	if (searchString.length() == 0)
+	{
+		return subject;
+	}
+
 	while (pos < subject.length())
 	{
 		size_t foundPos = subject.find(searchString, pos);
@@ -21,14 +27,37 @@ std::string ReplaceString(const std::string& subject,
 	return result;
 }
 
-void CopyFileWithReplace(std::istream& input, std::ostream& output,
+void CheckFiles(std::ifstream &inputFile, std::ofstream &outputFile)
+{
+	if (!inputFile.is_open())
+	{
+		throw std::exception("Not able to open input file.");
+	}
+	if (!outputFile.is_open())
+	{
+		throw std::exception("Not able to open output file");
+	}
+}
+
+void CopyFileWithReplace(std::string& inputFileName, std::string& outputFileName,
 	const std::string& searchString, const std::string& replacementString)
 {
 	std::string line;
+	std::ifstream inputFile;
+	std::ofstream outputFile;
 
-	while (std::getline(input, line))
+	inputFile.open(inputFileName);
+	outputFile.open(outputFileName);
+	CheckFiles(inputFile, outputFile);
+
+	while (std::getline(inputFile, line))
 	{
-		output << ReplaceString(line, searchString, replacementString) << "\n";
+		outputFile << ReplaceString(line, searchString, replacementString) << "\n";
+	}
+
+	if (!outputFile.flush())
+	{
+		throw std::exception("Failed to save data on disk\n");
 	}
 }
 
@@ -41,21 +70,19 @@ int main(int argc, char* argv[])
 		return 1;
 	}
 
-	std::ifstream inputFile;
-	inputFile.open(argv[1]);
-
-	std::ofstream outputFile;
-	outputFile.open(argv[2]);
+	std::string inputFileName = argv[1];
+	std::string outputFileName = argv[2];
 
 	std::string search = argv[3];
 	std::string replace = argv[4];
 
-	CopyFileWithReplace(inputFile, outputFile, search, replace);
-
-	if (!outputFile.flush())
+	try
 	{
-		std::cout << "Failed to save data on disk\n";
-		return 1;
+		CopyFileWithReplace(inputFileName, outputFileName, search, replace);
+	}
+	catch (const std::exception& e)
+	{
+		std::cout << e.what() << '\n';
 	}
 
 	return 0;

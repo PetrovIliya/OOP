@@ -20,7 +20,6 @@ public:
         CheckNumberSystem(from, to);
         CheckInput(number, from);
         DeleteFirstSymbolIfNegative(number);
-        std::cout << number << std::endl;
         int decNumber = StringToInt(number, from);
         std::string result = IntToString(decNumber, to);
 
@@ -162,7 +161,6 @@ struct Args
     std::string number;
 };
 
-
 int main(int argc, char* argv[])
 {
     if (argc != 4)
@@ -183,9 +181,7 @@ int main(int argc, char* argv[])
     catch(const std::exception & e)
     {
         std::cout << e.what() << '\n';
-        return 1;
     };
-
 
     return 0;
 }
