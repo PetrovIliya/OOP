@@ -46,7 +46,7 @@ void toUpperCase(std::string& string)
     std::transform(string.begin(), string.end(), string.begin(), ::toupper);
 }
 
-std::vector <int> GetDecimalNumberList(std::string str, std::vector<char> possibleNumbersOfNumberSystem)
+std::vector <int> GetDecimalNumberList(std::string str, std::vector<char>& possibleNumbersOfNumberSystem)
 {
     std::vector<char>::iterator it;
     std::vector <int> intNumbers;
@@ -121,7 +121,7 @@ void OverflowControl(int radix, int oldResult, int iterableNumber, bool isNegati
     }
 }
 
-int ConvertToDec(std::string str, int stringLength, int radix, std::vector<char> possibleNumbersOfNumberSystem, bool isNegative)
+int ConvertToDec(const std::string &str, int stringLength, int radix, std::vector<char> &possibleNumbersOfNumberSystem, bool isNegative)
 {
     std::vector <int> decimalNumberList = GetDecimalNumberList(str, possibleNumbersOfNumberSystem);
 
@@ -136,7 +136,7 @@ int ConvertToDec(std::string str, int stringLength, int radix, std::vector<char>
     return result;
 }
 
-int StringToInt(const std::string& str, int radix, std::vector<char> possibleNumbersOfNumberSystem, bool isNegative)
+int StringToInt(const std::string& str, int radix, std::vector<char> &possibleNumbersOfNumberSystem, bool isNegative)
 {
     int stringLength = (int)str.size();
     if (stringLength == 0)
@@ -166,7 +166,7 @@ std::string IntToString(int n, int radix)
     return str;
 }
 
-void checkSymbol(char symbol, std::vector<char> possibleNumbersOfNumberSystem, int radix)
+void checkSymbol(char symbol, std::vector<char>& possibleNumbersOfNumberSystem, int radix)
 {
     std::vector<char>::iterator it;
     it = std::find(possibleNumbersOfNumberSystem.begin(), possibleNumbersOfNumberSystem.end(), symbol);
