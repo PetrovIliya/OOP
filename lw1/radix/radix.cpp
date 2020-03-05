@@ -61,23 +61,82 @@ std::vector <int> GetDecimalNumberList(std::string str, std::vector<char> possib
     return intNumbers;
 }
 
-int ConvertToDec(std::string str, int stringLength, int radix, std::vector<char> possibleNumbersOfNumberSystem)
+int LogN(int number, int n)
+{
+    return static_cast<int>(std::log(static_cast<float>(number)) / std::log(static_cast<float>(n)));
+}
+
+int GetMaxIntByIsNegative(bool isNegative)
+{
+    if (isNegative)
+    {
+        return INT_MAX - 1;
+    }
+
+    return INT_MAX;
+}
+
+bool IsSummOverflowed(int arg1, int arg2, bool isNegative)
+{
+    int maxInt = GetMaxIntByIsNegative(isNegative);
+
+    if (arg1 > maxInt - arg2)
+    {
+        return true;
+    }
+
+    return false;
+}
+
+bool IsMultOverfloated(int arg1, int arg2, bool isNegative)
+{
+    if (arg1 == 0 && arg2 == 0)
+    {
+        return false;
+    }
+
+    int maxInt = GetMaxIntByIsNegative(isNegative);
+    int numberForDivision = arg2;
+    int numberForComparison = arg1;
+
+    if (arg1 != 0)
+    {
+        numberForDivision = arg1;
+        numberForComparison = arg2;
+    }
+
+    if (numberForComparison > maxInt / numberForDivision)
+    {
+        return true;
+    }
+
+    return false;
+}
+
+void OverflowControl(int radix, int oldResult, int iterableNumber, bool isNegative)
+{
+    if (IsMultOverfloated(radix, oldResult, isNegative) || IsSummOverflowed(oldResult + radix * oldResult, iterableNumber, isNegative))
+    {
+        throw std::exception("Overflow detected");
+    }
+}
+
+int ConvertToDec(std::string str, int stringLength, int radix, std::vector<char> possibleNumbersOfNumberSystem, bool isNegative)
 {
     std::vector <int> decimalNumberList = GetDecimalNumberList(str, possibleNumbersOfNumberSystem);
 
-    int numberRank = 0;
     int result = 0;
 
     for (int i = stringLength - 1; i >= 0; i--)
     {
-        result += decimalNumberList[i] * (int)pow(radix, numberRank);
-        numberRank++;
+        OverflowControl(radix, result, decimalNumberList[i], isNegative);
+        result = (result * radix) + decimalNumberList[i];
     }
 
     return result;
 }
 
-int StringToInt(const std::string& str, int radix, std::vector<char> possibleNumbersOfNumberSystem)
+int StringToInt(const std::string& str, int radix, std::vector<char> possibleNumbersOfNumberSystem, bool isNegative)
 {
     int stringLength = (int)str.size();
     if (stringLength == 0)
@@ -89,7 +148,7 @@ int StringToInt(const std::string& str, int radix, std::vector<char> possibleNum
         return std::stoi(str);
     }
 
-    return ConvertToDec(str, stringLength, radix, possibleNumbersOfNumberSystem);
+    return ConvertToDec(str, stringLength, radix, possibleNumbersOfNumberSystem, isNegative);
 }
 
 std::string IntToString(int n, int radix)
@@ -149,7 +208,7 @@ std::string convert(int from, int to, std::string number)
     CheckNumberSystem(from, to);
     CheckInput(number, from, isNegative, possibleNumbersOfNumberSystem);
     DeleteFirstSymbolIfNegative(number, isNegative);
-    int decNumber = StringToInt(number, from, possibleNumbersOfNumberSystem);
+    int decNumber = StringToInt(number, from, possibleNumbersOfNumberSystem, isNegative);
 
     std::string result = IntToString(decNumber, to);
     if (isNegative)
