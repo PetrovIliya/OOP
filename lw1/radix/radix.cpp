@@ -88,7 +88,7 @@ bool IsSummOverflowed(int arg1, int arg2, bool isNegative)
     return false;
 }
 
-bool IsMultOverfloated(int arg1, int arg2, bool isNegative)
+bool IsMultOverflowed(int arg1, int arg2, bool isNegative)
 {
     if (arg1 == 0 && arg2 == 0)
     {
@@ -115,7 +115,7 @@ bool IsMultOverfloated(int arg1, int arg2, bool isNegative)
 
 void OverflowControl(int radix, int oldResult, int iterableNumber, bool isNegative)
 {
-    if (IsMultOverfloated(radix, oldResult, isNegative) || IsSummOverflowed(oldResult + radix * oldResult, iterableNumber, isNegative))
+    if (IsMultOverflowed(radix, oldResult, isNegative) || IsSummOverflowed(oldResult + radix * oldResult, iterableNumber, isNegative))
     {
         throw std::exception("Overflow detected");
     }
