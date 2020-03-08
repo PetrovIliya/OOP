@@ -127,7 +127,7 @@ int ConvertToDec(const std::string &str, int stringLength, int radix, std::vecto
 
     int result = 0;
 
-    for (int i = stringLength - 1; i >= 0; i--)
+    for (int i = 0; i < stringLength; i++)
     {
         OverflowControl(radix, result, decimalNumberList[i], isNegative);
         result = (result * radix) + decimalNumberList[i];
