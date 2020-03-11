@@ -74,7 +74,7 @@ void OverflowControl(int radix, unsigned int oldResult, int iterableNumber, bool
         throw std::exception("Overflow detected");
     }
     int multResult = radix * oldResult;
-    if (isConversionNumberNegative)
+    if (isConversionNumberNegative && multResult != 0)
     {
         multResult--;
     }
@@ -84,13 +84,13 @@ void OverflowControl(int radix, unsigned int oldResult, int iterableNumber, bool
     }
 }
 
-unsigned int StringToInt(const std::string& str, int radix, bool isConversionNumberNegative)
+unsigned int StringToInt(const std::string& str, int radixFrom, bool isConversionNumberNegative)
 {
     if (str.size() == 0)
     {
         throw std::exception("An error occurred during program execution\n");
     }
-    if (radix == 10)
+    if (radixFrom == 10)
     {
         return std::stoi(str);
     }
@@ -101,31 +101,31 @@ unsigned int StringToInt(const std::string& str, int radix, bool isConversionNum
     {
         it = std::find(possibleNumbersOfNumberSystem.begin(), possibleNumbersOfNumberSystem.end(), ch);
         intNumber = (int)std::distance(possibleNumbersOfNumberSystem.begin(), it);
-        OverflowControl(radix, result, intNumber, isConversionNumberNegative);
-        result = (result * radix) + intNumber;
+        OverflowControl(radixFrom, result, intNumber, isConversionNumberNegative);
+        result = (result * radixFrom) + intNumber;
     }
     return result;
 }
 
-std::string IntToString(unsigned int number, int radix)
+std::string IntToString(unsigned int number, int radixTo)
 {
-    if (radix == 0)
+    if (radixTo == 0)
     {
         throw std::exception("Radix can't be zero\n");
     }
-    if (radix == 10)
+    if (radixTo == 10)
     {
         return std::to_string(number) ;
     }
     std::vector<unsigned int> remindersOfDivision;
     std::string result;
-    while ((int)number >= radix)
+    while ((int)number >= radixTo)
     {
-        remindersOfDivision.push_back(number % radix);
-        number /= radix;
+        remindersOfDivision.push_back(number % radixTo);
+        number /= radixTo;
     }
     remindersOfDivision.push_back(number);
-    for (size_t i = remindersOfDivision.size() - 1; i >= 0; i--)
+    for (int i = remindersOfDivision.size() - 1; i >= 0; i--)
     {
         result += std::to_string(remindersOfDivision[i]);
     }
@@ -164,7 +164,7 @@ std::string Convert(int from, int to, std::string number)
     }
     unsigned int intNumber = StringToInt(number, from, isConversionNumberNegative);
     std::string result = IntToString(intNumber, to);
-    if (isConversionNumberNegative)
+    if (isConversionNumberNegative && result != "0")
     {
         result.insert(0, 1, '-');
     }
@@ -211,6 +211,7 @@ int main(int argc, char* argv[])
     catch(const std::exception & e)
     {
         std::cout << e.what() << '\n';
+        return 1;
     };
     return 0;
 }
