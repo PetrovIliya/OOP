@@ -4,83 +4,36 @@
 #include <vector>
 #include <algorithm>
 #include <exception>
+#include <optional>
 
+const std::string templateOfNumbers = "0123456789";
+const std::vector<char> possibleNumbersOfNumberSystem = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H',
+                                                        'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'};
 
 struct Args
 {
-    int numberSystemFrom = 0;
-    int numberSystemTo = 0;
-    std::string number = "";
+    int numeralSystemFrom = 0;
+    int numeralSystemTo = 0;
+    std::string number;
 };
 
-void DeleteFirstSymbolIfNegative(std::string& str, bool isNegative)
+void CheckNumberForEmptiness(std::string number)
 {
-    if (isNegative)
+    if (number.size() == 0)
     {
-        str.erase(0, 1);
+        throw std::exception("Number is empty\n");
     }
 }
 
-void CheckNumberSystem(int from, int to)
-{
-    if (from < 2 || to < 2)
-    {
-        throw std::exception("Wrong number system \n");
-    }
-}
-
-void InitPossibleNumbersOfNumberSystem(std::vector<char> &possibleNumbersOfNumberSystem)
-{
-    for (int i = 0; i < 10; i++)
-    {
-        possibleNumbersOfNumberSystem.push_back(i + '0');
-    }
-    for (char ch = 'A'; ch <= 'Z'; ch++)
-    {
-        possibleNumbersOfNumberSystem.push_back(ch);
-    }
-}
-
-void toUpperCase(std::string& string)
+std::string ToUpperCase(std::string string)
 {
     std::transform(string.begin(), string.end(), string.begin(), ::toupper);
+    return string;
 }
 
-std::vector <int> GetDecimalNumberList(std::string str, std::vector<char>& possibleNumbersOfNumberSystem)
+bool IsSummOverflowed(int arg1, int arg2)
 {
-    std::vector<char>::iterator it;
-    std::vector <int> intNumbers;
-    int position;
-    for (char ch : str)
-    {
-        it = std::find(possibleNumbersOfNumberSystem.begin(), possibleNumbersOfNumberSystem.end(), ch);
-        position = (int)std::distance(possibleNumbersOfNumberSystem.begin(), it);
-        intNumbers.push_back(position);
-    }
-
-    return intNumbers;
-}
-
-int LogN(int number, int n)
-{
-    return static_cast<int>(std::log(static_cast<float>(number)) / std::log(static_cast<float>(n)));
-}
-
-int GetMaxIntByIsNegative(bool isNegative)
-{
-    if (isNegative)
-    {
-        return INT_MAX - 1;
-    }
-
-    return INT_MAX;
-}
-
-bool IsSummOverflowed(int arg1, int arg2, bool isNegative)
-{
-    int maxInt = GetMaxIntByIsNegative(isNegative);
-
-    if (arg1 > maxInt - arg2)
+    if (INT_MAX - arg1 - arg2 < 0)
     {
         return true;
     }
@@ -88,24 +41,20 @@ bool IsSummOverflowed(int arg1, int arg2, bool isNegative)
     return false;
 }
 
-bool IsMultOverflowed(int arg1, int arg2, bool isNegative)
+bool IsMultOverflowed(int arg1, int arg2)
 {
     if (arg1 == 0 && arg2 == 0)
     {
         return false;
     }
-
-    int maxInt = GetMaxIntByIsNegative(isNegative);
     int numberForDivision = arg2;
     int numberForComparison = arg1;
-
-    if (arg1 != 0)
+    if (numberForDivision == 0)
     {
         numberForDivision = arg1;
         numberForComparison = arg2;
     }
-
-    if (numberForComparison > maxInt / numberForDivision)
+    if (numberForComparison > INT_MAX / numberForDivision)
     {
         return true;
     }
@@ -113,132 +62,155 @@ bool IsMultOverflowed(int arg1, int arg2, bool isNegative)
     return false;
 }
 
-void OverflowControl(int radix, int oldResult, int iterableNumber, bool isNegative)
+void OverflowControl(int radix, unsigned int oldResult, int iterableNumber, bool isConversionNumberNegative)
 {
-    if (IsMultOverflowed(radix, oldResult, isNegative) || IsSummOverflowed(oldResult + radix * oldResult, iterableNumber, isNegative))
+    unsigned int tmpResult = oldResult;
+    if (isConversionNumberNegative && tmpResult != 0)
+    {
+        tmpResult--;
+    }
+    if (IsMultOverflowed(radix, tmpResult))
+    {
+        throw std::exception("Overflow detected");
+    }
+    int multResult = radix * oldResult;
+    if (isConversionNumberNegative)
+    {
+        multResult--;
+    }
+    if (IsSummOverflowed(multResult, iterableNumber))
     {
         throw std::exception("Overflow detected");
     }
 }
 
-int ConvertToDec(const std::string &str, int stringLength, int radix, std::vector<char> &possibleNumbersOfNumberSystem, bool isNegative)
+unsigned int StringToInt(const std::string& str, int radix, bool isConversionNumberNegative)
 {
-    std::vector <int> decimalNumberList = GetDecimalNumberList(str, possibleNumbersOfNumberSystem);
-
-    int result = 0;
-
-    for (int i = 0; i < stringLength; i++)
+    if (str.size() == 0)
     {
-        OverflowControl(radix, result, decimalNumberList[i], isNegative);
-        result = (result * radix) + decimalNumberList[i];
-    }
-
-    return result;
-}
-
-int StringToInt(const std::string& str, int radix, std::vector<char> &possibleNumbersOfNumberSystem, bool isNegative)
-{
-    int stringLength = (int)str.size();
-    if (stringLength == 0)
-    {
-        throw std::exception("Emptmy number\n");
+        throw std::exception("An error occurred during program execution\n");
     }
     if (radix == 10)
     {
         return std::stoi(str);
     }
-
-    return ConvertToDec(str, stringLength, radix, possibleNumbersOfNumberSystem, isNegative);
+    std::vector<char>::const_iterator it;
+    unsigned int result = 0;
+    int intNumber;
+    for (char ch : str)
+    {
+        it = std::find(possibleNumbersOfNumberSystem.begin(), possibleNumbersOfNumberSystem.end(), ch);
+        intNumber = (int)std::distance(possibleNumbersOfNumberSystem.begin(), it);
+        OverflowControl(radix, result, intNumber, isConversionNumberNegative);
+        result = (result * radix) + intNumber;
+    }
+    return result;
 }
 
-std::string IntToString(int n, int radix)
+std::string IntToString(unsigned int number, int radix)
 {
-    char str[11] = "\0";
-    int errCode;
-
-    errCode = _itoa_s(n, str, radix);
-
-    if (errCode != 0)
+    if (radix == 0)
     {
-        throw std::exception("An error occurred while converting\n");
+        throw std::exception("Radix can't be zero\n");
     }
-
-    return str;
-}
-
-void checkSymbol(char symbol, std::vector<char>& possibleNumbersOfNumberSystem, int radix)
-{
-    std::vector<char>::iterator it;
-    it = std::find(possibleNumbersOfNumberSystem.begin(), possibleNumbersOfNumberSystem.end(), symbol);
-    if (it == possibleNumbersOfNumberSystem.end())
+    if (radix == 10)
     {
-        throw std::exception("Number contains wrong symbols\n");
+        return std::to_string(number) ;
     }
-    int position = (int)std::distance(possibleNumbersOfNumberSystem.begin(), it);
-    if (position >= radix)
+    std::vector<unsigned int> remindersOfDivision;
+    std::string result;
+    while ((int)number >= radix)
     {
-        throw std::exception("Number contains out of radix range symbols\n");
+        remindersOfDivision.push_back(number % radix);
+        number /= radix;
     }
-}
-
-void CheckInput(const std::string& str, int radix, bool &isNegative, std::vector<char> possibleNumbersOfNumberSystem)
-{
-    char firstSymbol = str[0];
-    if (firstSymbol == '-')
+    remindersOfDivision.push_back(number);
+    for (size_t i = remindersOfDivision.size() - 1; i >= 0; i--)
     {
-        isNegative = true;
-    }
-    else
-    {
-        checkSymbol(firstSymbol, possibleNumbersOfNumberSystem, radix);
-    }
-
-    for (int i = 1; i < str.size(); i++)
-    {
-        checkSymbol(str[i], possibleNumbersOfNumberSystem, radix);
-    }
-}
-
-std::string convert(int from, int to, std::string number)
-{
-    bool isNegative = false;
-    std::vector<char> possibleNumbersOfNumberSystem;
-    InitPossibleNumbersOfNumberSystem(possibleNumbersOfNumberSystem);
-    toUpperCase(number);
-    CheckNumberSystem(from, to);
-    CheckInput(number, from, isNegative, possibleNumbersOfNumberSystem);
-    DeleteFirstSymbolIfNegative(number, isNegative);
-    int decNumber = StringToInt(number, from, possibleNumbersOfNumberSystem, isNegative);
-
-    std::string result = IntToString(decNumber, to);
-    if (isNegative)
-    {
-        result.insert(0, 1, '-');
+        result += std::to_string(remindersOfDivision[i]);
     }
 
     return result;
 }
 
-int main(int argc, char* argv[])
+void CheckNumberForCorrectRadixRange(std::string number, int radix)
+{
+    CheckNumberForEmptiness(number);
+    char firstSymbol = number[0];
+    if (firstSymbol == '-')
+    {
+        number.erase(0, 1);
+    }
+    for (char symbol : number)
+    {
+        std::vector<char>::const_iterator it;
+        it = std::find(possibleNumbersOfNumberSystem.begin(), possibleNumbersOfNumberSystem.end(), symbol);
+        int position = (int)std::distance(possibleNumbersOfNumberSystem.begin(), it);
+        if (it == possibleNumbersOfNumberSystem.end() || position >= radix)
+        {
+            throw std::exception("Number contains out of radix range symbols\n");
+        }
+    }
+}
+
+std::string Convert(int from, int to, std::string number)
+{
+    CheckNumberForEmptiness(number);
+    bool isConversionNumberNegative = false; 
+    if (number[0] == '-')
+    {
+        number.erase(0, 1);
+        isConversionNumberNegative = true;
+    }
+    unsigned int intNumber = StringToInt(number, from, isConversionNumberNegative);
+    std::string result = IntToString(intNumber, to);
+    if (isConversionNumberNegative)
+    {
+        result.insert(0, 1, '-');
+    }
+    return result;
+}
+
+bool IsNumeric(const std::string& string)
+{
+    size_t offset = 0;
+    if (string[offset] == '-')
+    {
+        ++offset;
+    }
+    return string.find_first_not_of(templateOfNumbers, offset) == std::string::npos;
+}
+
+Args ParseArgs(int argc, char* argv[])
 {
     if (argc != 4)
     {
-        std::cout << "wrong quantity of parameters.\nUsage: radix.exe <number system from> <number system to> <number>";
+       throw  std::exception("Wrong quantity of parameters.\nUsage: radix.exe <numeral system from> <number system to> <number>\n");
+    }
+    if (!IsNumeric(argv[1]) || !IsNumeric(argv[2]) || atoi(argv[1]) < 2 || atoi(argv[2]) < 2 || atoi(argv[1]) > 36 || atoi(argv[2]) > 36)
+    {
+        throw  std::exception("Wrong numeral system. Numeral system should be between 2 and 36\n");
     }
     Args args;
-    args.numberSystemFrom = atoi(argv[1]);
-    args.numberSystemTo = atoi(argv[2]);
-    args.number = argv[3];
+    args.numeralSystemFrom = atoi(argv[1]);
+    args.numeralSystemTo = atoi(argv[2]);
+    args.number = ToUpperCase(argv[3]);
+    CheckNumberForCorrectRadixRange(args.number, args.numeralSystemFrom);
+    return args;
+}
 
+int main(int argc, char* argv[])
+{
+    Args args;
     try
     {
-        std::string result = convert(args.numberSystemFrom, args.numberSystemTo, args.number);
+        args = ParseArgs(argc, argv);
+        std::string result = Convert(args.numeralSystemFrom, args.numeralSystemTo, args.number);
         std::cout << result << std::endl;
     }
     catch(const std::exception & e)
     {
         std::cout << e.what() << '\n';
     };
-
     return 0;
 }
