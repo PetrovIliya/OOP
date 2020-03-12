@@ -109,6 +109,7 @@ unsigned int StringToInt(const std::string& str, int radixFrom, bool isConversio
 
 std::string IntToString(unsigned int number, int radixTo)
 {
+
     if (radixTo == 0)
     {
         throw std::exception("Radix can't be zero\n");
@@ -121,13 +122,13 @@ std::string IntToString(unsigned int number, int radixTo)
     std::string result;
     while ((int)number >= radixTo)
     {
-        remindersOfDivision.push_back(number % radixTo);
+        remindersOfDivision.push_back(possibleNumbersOfNumberSystem[number % radixTo]);
         number /= radixTo;
     }
-    remindersOfDivision.push_back(number);
+    remindersOfDivision.push_back(possibleNumbersOfNumberSystem[number]);
     for (int i = remindersOfDivision.size() - 1; i >= 0; i--)
     {
-        result += std::to_string(remindersOfDivision[i]);
+        result += remindersOfDivision[i];
     }
 
     return result;
