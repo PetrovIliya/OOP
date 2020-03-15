@@ -195,7 +195,7 @@ Args ParseArgs(int argc, char* argv[])
 
     if (!IsNumeric(argv[1]) || !IsNumeric(argv[2]))
     {
-        throw  std::invalid_argument("Wrong numeral system. Numeral system should be a number\n");
+        throw  std::invalid_argument("Wrong numeral system. Numeral system should be a decimal number\n");
     }
 
     Args args;
