@@ -220,12 +220,7 @@ int main(int argc, char* argv[])
         std::string result = Convert(args.numeralSystemFrom, args.numeralSystemTo, args.number);
         std::cout << result << std::endl;
     }
-    catch (std::invalid_argument & e)
-    {
-        std::cout << e.what() << '\n';
-        return 1;
-    }
-    catch (std::runtime_error & e)
+    catch (std::exception & e)
     {
         std::cout << e.what() << '\n';
         return 1;
