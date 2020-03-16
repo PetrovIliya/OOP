@@ -36,7 +36,7 @@ void PrintMatrix(const Matrix3x3& matrix)
     }
 }
 
-Matrix3x3 MultiplyMatrixByNumber(Matrix3x3& matrix, float number)
+void MultiplyMatrixByNumber(Matrix3x3& matrix, float number)
 {
     Matrix3x3 resultMatrix = matrix;
 
@@ -47,8 +47,6 @@ Matrix3x3 MultiplyMatrixByNumber(Matrix3x3& matrix, float number)
             elem *= number;
         }
     }
-
-    return resultMatrix;
 }
 
 float GetDeterminant2x2(const Matrix2x2& algExpr)
@@ -90,7 +88,7 @@ Matrix3x3 GetMinorMatrix(const Matrix3x3& matrix)
 {
     Matrix3x3Row minorMatrixRow;
     Matrix3x3 minorMatrix;
-    int sign = 1;
+    int sign = -1;
 
     for (size_t rowIndex = 0; rowIndex < MATRIX_3X3_SIZE; rowIndex++)
     {
@@ -105,7 +103,7 @@ Matrix3x3 GetMinorMatrix(const Matrix3x3& matrix)
     return minorMatrix;
 }
 
-Matrix3x3 GetTransposedMatrix(const Matrix3x3& matrix)
+void TransposeMatrix(Matrix3x3& matrix)
 {
     for (size_t i = 0; i < MATRIX_3X3_SIZE - 1; i++)
     {
@@ -117,8 +115,6 @@ Matrix3x3 GetTransposedMatrix(const Matrix3x3& matrix)
             }
         }
     }
-
-    return matrix;
 }
 
 float GetDeterminant3x3(const Matrix3x3& matrix)
@@ -208,16 +204,16 @@ std::string GetInputFileName(int argc, char* argv[])
     return argv[1];
 }
 
-Matrix3x3 Invert3x3Matrix(const Matrix3x3 &matrix)
+void Invert3x3Matrix(Matrix3x3 &matrix)
 {
     float det = GetDeterminant3x3(matrix);
     if (det == 0)
     {
         throw std::logic_error("Determinant is zero. Inverted matrix do not exist");
     }
-    Matrix3x3 transposedMatrix = GetTransposedMatrix(matrix);
-    Matrix3x3 minoreMatrix = GetMinorMatrix(transposedMatrix);
-    return MultiplyMatrixByNumber(minoreMatrix, 1 / det);
+    TransposeMatrix(matrix);
+    matrix = GetMinorMatrix(matrix);
+    MultiplyMatrixByNumber(matrix, 1 / det);
 }
 
 int main(int argc, char* argv[])
@@ -227,8 +223,8 @@ int main(int argc, char* argv[])
         std::string fileName = GetInputFileName(argc, argv);
         Matrix3x3 matrix;
         InitMatrixFromFile(fileName, matrix);
-        Matrix3x3 invertedMatrix = Invert3x3Matrix(matrix);
-        PrintMatrix(invertedMatrix);
+        Invert3x3Matrix(matrix);
+        PrintMatrix(matrix);
     }
     catch (const std::exception & e)
     {
