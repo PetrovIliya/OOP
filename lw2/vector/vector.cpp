@@ -1,17 +1,13 @@
-﻿#include <iostream>
-#include <vector>
-#include <algorithm>
-#include <sstream>
-#include <iterator>
+#include "vector.h"
 
 using namespace std;
 
 void MultiplyVectorByNumber(vector<float>& vector, float number)
 {
-	transform(vector.begin(), vector.end(), vector.begin(), [number](float &element) { return (element * number); });
+	transform(vector.begin(), vector.end(), vector.begin(), [number](float& element) { return (element * number); });
 }
 
-void SortVector(vector<float> &vector)
+void SortVector(vector<float>& vector)
 {
 	sort(vector.begin(), vector.end());
 }
@@ -34,28 +30,17 @@ vector<float> ReadVector(istream& inputStream)
 	return vector;
 }
 
-int main()
+bool MultiplyVectorByMinElement(vector<float>& vector)
 {
-	try
+	if (vector.empty())
 	{
-		vector<float> vector = ReadVector(cin);
-		if (vector.empty())
-		{
-			return 0;
-		}
+		return false;
+	}
 
-		float minElement = *min_element(vector.begin(), vector.end());
-		if (minElement != 1)
-		{
-			MultiplyVectorByNumber(vector, minElement);
-		}
-		SortVector(vector);
-		PrintVector(vector);
-	}
-	catch (const std::exception& e)
+	float minElement = *min_element(vector.begin(), vector.end());
+	if (minElement != 1)
 	{
-		cout << e.what() << '\n';
+		MultiplyVectorByNumber(vector, minElement);
 	}
-	
-    return 0;
+	return true;
 }
