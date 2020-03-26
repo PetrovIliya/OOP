@@ -168,10 +168,10 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="vector.cpp" />
+    <ClCompile Include="vectorUtilities.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="vector.h" />
+    <ClInclude Include="vectorUtilities.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
