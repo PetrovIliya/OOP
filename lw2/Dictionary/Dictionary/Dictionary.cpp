@@ -1,50 +1,11 @@
 ﻿#include <iostream>
-#include <string>
 #include <exception>
 #include <fstream>
-#include <map>
 #include <algorithm>
-#include <Windows.h>
-#include <vector>
+#include "Dictionary.h"
+#include "StringUtilities.h"
 
 using namespace std;
-using Dictionary = map<string, string>;
-
-const string TRANSLATE_DELIMITER = " - ";
-const string EXIT_STRING = "...";
-
-struct WordTranslate
-{
-	string word;
-	string translate;
-};
-
-void Trim(string& str)
-{
-	remove_if(str.begin(), str.end(), [](const char& ch) { return ch == ' '; });
-}
-
-void ToLower(string& str)
-{
-	transform(str.begin(), str.end(), str.begin(), tolower);
-
-}
-
-string GetFileName(int argc, char* argv[])
-{
-	string fileName;
-	if (argc < 2 || argv[1] == "")
-	{
-		cout << "Enter the name of the file in which you want to use as dictionary: " << endl;
-		getline(cin, fileName);
-	}
-	else
-	{
-		fileName = argv[1];
-	}
-
-	return fileName;
-}
 
 string GetTranslateFromDictionary(const string& word, const Dictionary& dictionary)
 {
@@ -169,30 +130,4 @@ void StartDialog(Dictionary& dictionary, const string& fileName)
 	{
 		StartSavingNewWordsDialog(dictionary, newWords, fileName);
 	}
-}
-
-void SetRuLanguage()
-{
-	setlocale(LC_ALL, "Russian");
-	SetConsoleCP(1251);
-	SetConsoleOutputCP(1251);
-}
-
-int main(int argc, char* argv[])
-{
-	SetRuLanguage();
-
-	try
-	{
-		string fileName = GetFileName(argc, argv);
-		Dictionary dictionary = CreateDictionaryFromFile(fileName);
-		StartDialog(dictionary, fileName);
-	}
-	catch (const exception& e)
-	{
-		cout << e.what() << '\n';
-		return 1;
-	}
-
-	return 0;
 }

@@ -147,7 +147,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\Dictionary\Dictionary.cpp" />
+    <ClCompile Include="..\Dictionary\StringUtilities.cpp" />
+    <ClCompile Include="..\Dictionary\WindowsUtilities.cpp" />
     <ClCompile Include="DictionaryTests.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\Dictionary\Dictionary.h" />
+    <ClInclude Include="..\Dictionary\StringUtilities.h" />
+    <ClInclude Include="..\Dictionary\WindowsUtilities.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
