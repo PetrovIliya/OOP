@@ -32,12 +32,18 @@ void ToLower(string& str)
 
 string GetFileName(int argc, char* argv[])
 {
+	string fileName;
 	if (argc < 2 || argv[1] == "")
 	{
-		throw new invalid_argument("No file name");
+		cout << "Enter the name of the file in which you want to use as dictionary: " << endl;
+		getline(cin, fileName);
+	}
+	else
+	{
+		fileName = argv[1];
 	}
 
-	return argv[1];
+	return fileName;
 }
 
 string GetTranslateFromDictionary(const string& word, const Dictionary& dictionary)
@@ -104,26 +110,32 @@ void AddNewWord(const string& word, Dictionary& dictionary, vector<string>& newW
 
 void SaveNewWords(Dictionary& dictionary, const vector<string>& newWords, const string& fileName)
 {
+	ofstream file(fileName, ios::app);
+
+	if (!file.is_open())
+	{
+		throw new runtime_error("Can't open file for saving");
+	}
+
+	for (string newWord : newWords)
+	{
+		file << newWord << TRANSLATE_DELIMITER << dictionary[newWord] << endl;
+	}
+
+	file.close();
+}
+
+
+void StartSavingNewWordsDialog(Dictionary& dictionary, const vector<string>& newWords, const string& fileName)
+{
 	cout << "Changes have been discovered. Type \"y\" to save them or anything else otherwise" << endl;
 	string userInput;
 	cin >> userInput;
 	ToLower(userInput);
 	if (userInput == "y")
 	{
-		ofstream file(fileName, ios::app);
-
-		if (!file.is_open())
-		{
-			throw new runtime_error("Can't open file for saving");
-		}
-
-		for (string newWord : newWords)
-		{
-			file << newWord << TRANSLATE_DELIMITER <<  dictionary[newWord] << endl;
-		}
-
-		file.close();
-		cout << "Changes have been saved" << endl;
+		SaveNewWords(dictionary, newWords, fileName);
+		cout << "Changes have been saved" << endl;		
 	}
 }
 
@@ -155,11 +167,11 @@ void StartDialog(Dictionary& dictionary, const string& fileName)
 
 	if (!newWords.empty())
 	{
-		SaveNewWords(dictionary, newWords, fileName);
+		StartSavingNewWordsDialog(dictionary, newWords, fileName);
 	}
 }
 
-void SetRuLnaguage()
+void SetRuLanguage()
 {
 	setlocale(LC_ALL, "Russian");
 	SetConsoleCP(1251);
@@ -168,7 +180,7 @@ void SetRuLnaguage()
 
 int main(int argc, char* argv[])
 {
-	SetRuLnaguage();
+	SetRuLanguage();
 
 	try
 	{
