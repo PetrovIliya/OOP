@@ -75,7 +75,7 @@ void SaveNewWords(Dictionary& dictionary, const vector<string>& newWords, const 
 
 	if (!file.is_open())
 	{
-		throw new runtime_error("Can't open file for saving");
+		throw runtime_error("Can't open file for saving");
 	}
 
 	for (string newWord : newWords)
