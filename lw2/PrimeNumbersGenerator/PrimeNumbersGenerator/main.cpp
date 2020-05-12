@@ -40,12 +40,6 @@ int main(int argc, char* argv[])
 		cout << e.what() << endl;
 		return 1;
 	}
-	catch (const invalid_argument& ia)
-	{
-		cout << "tut";
-		cout << ia.what() << endl;
-		return 1;
-	};
 
 	return 0;
 }
