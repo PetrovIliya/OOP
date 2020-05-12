@@ -16,7 +16,7 @@ int GetNextPrimeNumber(const vector<bool>& sieve, int currentPrimeNumber)
 		}
 	}
 
-	return 0;
+	throw runtime_error("Can't find next prime number to continue algorithm");
 }
 
 void MarkNotPrimeNumbers(vector<bool>& sieve, int upperBound)
