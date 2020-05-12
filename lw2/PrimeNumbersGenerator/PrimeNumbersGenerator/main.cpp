@@ -10,14 +10,14 @@ int GetUpperBound(int argc, char* argv[])
 {
 	if (argc < 2 || argv[1] == "")
 	{
-		throw new invalid_argument("Upper bound is requered");
+		throw invalid_argument("Upper bound is requered");
 	}
 
 	int upperBound = stoi(argv[1]);
 
 	if (upperBound > MAX_UPPER_BOUND)
 	{
-		throw new invalid_argument("Upper bound should be less then " + MAX_UPPER_BOUND);
+		throw invalid_argument("Upper bound should be less then " + to_string(MAX_UPPER_BOUND));
 	}
 
 	return upperBound;
