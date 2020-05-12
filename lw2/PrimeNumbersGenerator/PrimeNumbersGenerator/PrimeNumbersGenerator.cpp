@@ -38,12 +38,23 @@ void MarkNotPrimeNumbers(vector<bool>& sieve, int upperBound)
 
 set<int> GeneratePrimeNumbersSet(int upperBound)
 {
+	set<int> primeNumbers;
+
+	if (upperBound < FIRST_PRIME_NUMBER)
+	{
+		return primeNumbers;
+	}
+
+	if (upperBound == FIRST_PRIME_NUMBER)
+	{
+		return { FIRST_PRIME_NUMBER };
+	}
+
 	vector<bool> sieve(upperBound);
 	fill_n(sieve.begin(), upperBound, true);
 
 	MarkNotPrimeNumbers(sieve, upperBound);
 
-	set<int> primeNumbers;
 	for (int i = FIRST_PRIME_NUMBER; i < sieve.size(); i++)
 	{
 		if (sieve[i])

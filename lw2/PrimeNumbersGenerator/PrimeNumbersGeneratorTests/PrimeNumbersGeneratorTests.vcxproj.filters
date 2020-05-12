@@ -18,5 +18,13 @@
     <ClCompile Include="PrimeNumbersGeneratorTests.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
+    <ClCompile Include="..\PrimeNumbersGenerator\PrimeNumbersGenerator.cpp">
+      <Filter>Файлы ресурсов</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\PrimeNumbersGenerator\PrimeNumbersGenerator.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
