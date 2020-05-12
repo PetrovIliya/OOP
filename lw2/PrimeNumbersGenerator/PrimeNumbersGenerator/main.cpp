@@ -31,11 +31,12 @@ int main(int argc, char* argv[])
 		if (upperBound < FIRST_PRIME_NUMBER)
 		{
 			cout << "No prime numbers";
+			return 1;
 		}
 		set<int> primeNumbers = GeneratePrimeNumbersSet(upperBound);
 		copy(primeNumbers.begin(), primeNumbers.end(), ostream_iterator<int>(std::cout, " "));
 	}
-	catch (const std::exception& e)
+	catch (const exception& e)
 	{
 		cout << e.what() << endl;
 		return 1;
