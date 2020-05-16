@@ -3,15 +3,17 @@
 #include <string>
 
 const int SIGN_OF_LACK = -1;
+const int BOHR_TREE_ROOT = 0;
 
 struct BohrVertex
 {
     std::map<char, int> adjacentVertexes;
-    std::vector<int> autoMove;
+    std::map<char, int> autoMove;
     int suffLink = SIGN_OF_LACK;
+    int goodSuffLink = SIGN_OF_LACK;
     int parentVertex;
     char parentVertexSymbol;
-    int lineNumber;
+    int patternIndex;
     bool isWord = false;
 };
 

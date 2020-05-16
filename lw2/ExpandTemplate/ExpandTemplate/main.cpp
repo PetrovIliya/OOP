@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <iterator>
 #include "ExpandTemplate.h"
+#include <Windows.h>
 
 using namespace std;
 
@@ -88,6 +89,9 @@ string GetTemplateFromFile(ifstream& file)
 
 int main(int argc, char* argv[])
 {
+	SetConsoleCP(1251);
+	SetConsoleOutputCP(1251);
+
 	try
 	{
 		Params params = ParseParams(argc, argv);
