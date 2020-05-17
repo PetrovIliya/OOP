@@ -83,6 +83,14 @@ SCENARIO("When supplying correct params and template, we expect correct replacem
 	REQUIRE(expandedTemplate == "dog eat cat");
 }
 
+SCENARIO("When supplying template whith several same words and params to raplace this word, we expect correct replacement of all words")
+{
+	string tpl = "first dog eat meat. Second dog don't";
+	map <string, string> params = { {"dog", "cat"} };
+	string expandedTemplate = ExpandTemplate(tpl, params);
+	REQUIRE(expandedTemplate == "first cat eat meat. Second cat don't");
+}
+
 SCENARIO("If there are several possible substitution options, the parameter with the longest length should be selected.")
 {
 	string tpl = "abb";
