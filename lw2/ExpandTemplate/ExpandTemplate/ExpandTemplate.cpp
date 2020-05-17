@@ -126,32 +126,44 @@ vector<string> GetWordsForReplace(map<string, string> const& params)
 	return wordsForReplace;
 }
 
-void check(BohrTree& bohrTree, int v, int i, const vector<string> & pattern)
+void AddPosotionIfWord(BohrTree& bohrTree, int suffLinkVertex, int position, const vector<string>& pattern, map<int, string>& wordsPositions)
 {
-	for (int u = v; u != 0; u = GetGoodSuffLink(bohrTree, u)) 
+	for (int goodSuffLinkVertex = suffLinkVertex; goodSuffLinkVertex != 0; goodSuffLinkVertex = GetGoodSuffLink(bohrTree, goodSuffLinkVertex))
 	{
-		if (bohrTree[u].isWord) 
-			cout << i - pattern[bohrTree[u].patternIndex].length() + 1 << " " << pattern[bohrTree[u].patternIndex] << endl;
+		if (bohrTree[goodSuffLinkVertex].isWord)
+		{
+			int wordPositionInTemplate = position - (int)pattern[bohrTree[goodSuffLinkVertex].patternIndex].length();
+			string word = pattern[bohrTree[goodSuffLinkVertex].patternIndex];
+			wordsPositions[wordPositionInTemplate] = word;
+		}
 	}
 }
 
-void find_all_pos(BohrTree& bohrTree, const string& s, const vector<string>& pattern)
+map<int, string> FindWordsPositionsInTemplate(BohrTree& bohrTree, const string& tpl, const vector<string>& pattern)
 {
-	int u = 0;
-	for (int i = 0; i < s.length(); i++) 
+	map<int, string> wordsPositions;
+	int suffLinkVertex = 0;
+	for (int i = 0; i < tpl.length(); i++)
 	{
-		u = GetAutoMove(bohrTree, u, s[i]);
-
-		check(bohrTree, u, i + 1, pattern);
+		suffLinkVertex = GetAutoMove(bohrTree, suffLinkVertex, tpl[i]);
+		AddPosotionIfWord(bohrTree, suffLinkVertex, i + 1, pattern, wordsPositions);
 	}
+
+	return wordsPositions;
 }
 
 string ExpandTemplate(string const& tpl, map<string, string> const& params)
 {
 	vector<string> wordsForReplace = GetWordsForReplace(params);
 	BohrTree bohrTree = GetBohrTree(wordsForReplace);
+	map<int, string> wordsPositions = FindWordsPositionsInTemplate(bohrTree, tpl, wordsForReplace);
+	string expandedTemplate = tpl;
+	map<string, string> pattern = params;
 
-	find_all_pos(bohrTree, tpl, wordsForReplace);
+	for (pair<int, string> wordPosition : wordsPositions)
+	{
+		expandedTemplate.replace(wordPosition.first, wordPosition.second.length(), pattern[wordPosition.second]);
+	}
 
-	return "";
+	return expandedTemplate;
 }
