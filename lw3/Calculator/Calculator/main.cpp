@@ -1,7 +1,19 @@
 #include <iostream>
 
+#include "CCalculatorControl.h"
+
+using namespace std;
+
 int main()
 {
-    std::cout << "Hello World!\n";
-}
+	CCalculator calc;
+	CCalculatorControl calculatorControl(calc, cin, cout);
 
+	while ((!cin.eof()) && (!cin.fail()))
+	{
+		if (!calculatorControl.ExecuteCommand())
+		{
+			cout << "Unknown command!" << endl;
+		}
+	}
+}
