@@ -1,0 +1,9 @@
+Circle 550 70 50 FillColor=#c3e01b LineColor=#e0841b
+Rectangle 300 300 400 150 FillColor=#0000ff LineColor=#ff0000
+Rectangle 300 450 400 200 FillColor=#0000ff LineColor=#ff0000
+Rectangle 200 450 200 200 FillColor=#0000ff LineColor=#ff0000
+Rectangle 320 500 70 130 FillColor=#00ff00 LineColor=#000000
+Circle 370 560 5 FillColor=#000000 LineColor=#ff0000
+Triangle 300 300 200 450 400 450 FillColor=0000ff LineColor=#ff0000
+Rectangle 350 220 20 80 FillColor=#74756d
+Draw
